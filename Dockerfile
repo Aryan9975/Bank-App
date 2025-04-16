@@ -11,4 +11,3 @@ COPY target/BANK-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 EXPOSE 8080
 
 # Tomcat will auto-deploy ROOT.war
-git commit -m "first commit"
