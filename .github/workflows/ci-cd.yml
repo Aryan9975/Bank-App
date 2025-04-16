@@ -51,8 +51,8 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            docker pull aryan9511/aryan:tag4
+            docker pull aryan9511/aryan:tag3
             docker rm -f baas-container || true
-            docker run -d --name baas-container -p 8080:8080 aryan9511/aryan:tag4
+            docker run -d --name baas-container -p 8080:8080 aryan9511/aryan:tag3
           EOF  
           
