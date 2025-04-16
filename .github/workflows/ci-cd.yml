@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      IMAGE_NAME: aryan9511/aryan:tag4
+      IMAGE_NAME: aryan9511/aryan:tag6
 
     steps:
       - name: Checkout code
