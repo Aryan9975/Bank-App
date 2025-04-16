@@ -37,3 +37,22 @@ jobs:
 
       - name: Push image to Docker Hub
         run: docker push $IMAGE_NAME
+      
+  deploy-to-ec2:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install SSH key
+        run: |
+          echo "${{ secrets.EC2_KEY }}" | base64 -d > key.pem
+          chmod 400 key.pem
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            docker pull aryan9511/aryan:tag4
+            docker rm -f baas-container || true
+            docker run -d --name baas-container -p 8080:8080 aryan9511/aryan:tag4
+          EOF  
+          
