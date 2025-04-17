@@ -72,26 +72,24 @@ jobs:
           echo "${{ secrets.EC2_KEY }}" | base64 -d > key.pem
           chmod 400 key.pem
 
-      - name: Set image name by branch
-        run: |
-          BRANCH="${GITHUB_REF##*/}"
-          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
-            BRANCH="${{ github.event.inputs.branch }}"
-          fi
-
-          echo "Running for branch: $BRANCH"
-
-          if [[ "$BRANCH" == "main" ]]; then
-            echo "IMAGE_NAME=aryan9511/aryan:tag3" >> $GITHUB_ENV
-          elif [[ "$BRANCH" == "testbeforedeploy" ]]; then
-            echo "IMAGE_NAME=aryan9511/aryan:tagtest" >> $GITHUB_ENV
-          else
-            echo "IMAGE_NAME=aryan9511/aryan:latest" >> $GITHUB_ENV
-          fi
-
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            BRANCH="${GITHUB_REF##*/}"
+            if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+              BRANCH="${{ github.event.inputs.branch }}"
+            fi
+
+            if [[ "$BRANCH" == "main" ]]; then
+              IMAGE_NAME="aryan9511/aryan:tag3"
+            elif [[ "$BRANCH" == "testbeforedeploy" ]]; then
+              IMAGE_NAME="aryan9511/aryan:tagtest"
+            else
+              IMAGE_NAME="aryan9511/aryan:latest"
+            fi
+
+            echo "Using image: $IMAGE_NAME"
+
             docker pull $IMAGE_NAME
             docker stop baas-container || true
             docker rm baas-container || true
