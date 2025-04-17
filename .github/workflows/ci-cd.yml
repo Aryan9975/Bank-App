@@ -7,9 +7,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
     inputs:
-      environment:
-        description: 'Target branch for testing (manual)'
-        required: false
+      branch:
+        description: 'Target branch (for manual trigger)'
+        required: true
         default: 'testbeforedeploy'
 
 jobs:
@@ -35,9 +35,11 @@ jobs:
       - name: Set image name by branch
         run: |
           BRANCH="${GITHUB_REF##*/}"
-          if [[ -n "${{ github.head_ref }}" ]]; then
-            BRANCH="${{ github.head_ref }}"
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            BRANCH="${{ github.event.inputs.branch }}"
           fi
+
+          echo "Running for branch: $BRANCH"
 
           if [[ "$BRANCH" == "main" ]]; then
             echo "IMAGE_NAME=${BASE_IMAGE}:tag3" >> $GITHUB_ENV
@@ -56,11 +58,11 @@ jobs:
       - name: Build Docker image
         run: docker build -t $IMAGE_NAME .
 
-      - name: Push image to Docker Hub
+      - name: Push Docker image to Docker Hub
         run: docker push $IMAGE_NAME
 
   deploy-to-ec2:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testbeforedeploy'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testbeforedeploy' || github.event_name == 'workflow_dispatch'
     needs: build-and-push
     runs-on: ubuntu-latest
 
@@ -73,9 +75,11 @@ jobs:
       - name: Set image name by branch
         run: |
           BRANCH="${GITHUB_REF##*/}"
-          if [[ -n "${{ github.head_ref }}" ]]; then
-            BRANCH="${{ github.head_ref }}"
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            BRANCH="${{ github.event.inputs.branch }}"
           fi
+
+          echo "Running for branch: $BRANCH"
 
           if [[ "$BRANCH" == "main" ]]; then
             echo "IMAGE_NAME=aryan9511/aryan:tag3" >> $GITHUB_ENV
