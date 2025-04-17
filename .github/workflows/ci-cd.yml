@@ -74,12 +74,14 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            BRANCH="${GITHUB_REF##*/}"
-            if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
-              BRANCH="${{ github.event.inputs.branch }}"
-            fi
+          BRANCH="${GITHUB_REF##*/}"
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            BRANCH="${{ github.event.inputs.branch }}"
+          fi
 
+          echo "Deploying for branch: $BRANCH"
+
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "BRANCH=$BRANCH bash -s" << 'EOF'
             if [[ "$BRANCH" == "main" ]]; then
               IMAGE_NAME="aryan9511/aryan:tag3"
             elif [[ "$BRANCH" == "testbeforedeploy" ]]; then
