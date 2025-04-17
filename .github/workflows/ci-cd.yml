@@ -34,9 +34,14 @@ jobs:
 
       - name: Set image name by branch
         run: |
-          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+          BRANCH="${GITHUB_REF##*/}"
+          if [[ -n "${{ github.head_ref }}" ]]; then
+            BRANCH="${{ github.head_ref }}"
+          fi
+
+          if [[ "$BRANCH" == "main" ]]; then
             echo "IMAGE_NAME=${BASE_IMAGE}:tag3" >> $GITHUB_ENV
-          elif [[ "${GITHUB_REF##*/}" == "testbeforedeploy" ]]; then
+          elif [[ "$BRANCH" == "testbeforedeploy" ]]; then
             echo "IMAGE_NAME=${BASE_IMAGE}:tagtest" >> $GITHUB_ENV
           else
             echo "IMAGE_NAME=${BASE_IMAGE}:latest" >> $GITHUB_ENV
@@ -67,9 +72,14 @@ jobs:
 
       - name: Set image name by branch
         run: |
-          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+          BRANCH="${GITHUB_REF##*/}"
+          if [[ -n "${{ github.head_ref }}" ]]; then
+            BRANCH="${{ github.head_ref }}"
+          fi
+
+          if [[ "$BRANCH" == "main" ]]; then
             echo "IMAGE_NAME=aryan9511/aryan:tag3" >> $GITHUB_ENV
-          elif [[ "${GITHUB_REF##*/}" == "testbeforedeploy" ]]; then
+          elif [[ "$BRANCH" == "testbeforedeploy" ]]; then
             echo "IMAGE_NAME=aryan9511/aryan:tagtest" >> $GITHUB_ENV
           else
             echo "IMAGE_NAME=aryan9511/aryan:latest" >> $GITHUB_ENV
