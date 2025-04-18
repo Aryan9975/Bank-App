@@ -20,7 +20,7 @@ public class AuthController {
     public String login(@RequestParam String username, @RequestParam String password) {
         User user = userRepo.findByUsername(username);
         if (user != null && user.getPassword().equals(password)) {
-            return jwtUtil.generateToken(username, user.getRole());
+            return "Your Token is :" + jwtUtil.generateToken(username, user.getRole());
         } else {
             throw new RuntimeException("Invalid credentials");
         }
