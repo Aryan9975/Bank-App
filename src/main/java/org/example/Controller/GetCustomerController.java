@@ -1,7 +1,7 @@
 package org.example.Controller;
 
-import org.example.Model.transaction;
-import org.example.Services.transactionMethods;
+import org.example.Model.customer;
+import org.example.Services.customerMethods;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,16 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/transactions")
-@PreAuthorize("hasRole('ADMIN')")
-public class TransactionController {
+@RequestMapping("/api/customers")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+public class GetCustomerController {
 
     @Autowired
-    private transactionMethods transactionMethods;
+    private customerMethods customerMethods;
 
     @GetMapping
-    public ResponseEntity<List<transaction>> getAllTransactions() {
-        List<transaction> transactions = transactionMethods.getAllTransactions();
-        return ResponseEntity.ok(transactions);
+    public ResponseEntity<List<customer>> getAllCustomers() {
+        List<customer> customers = customerMethods.getAllCustomers();
+        return ResponseEntity.ok(customers);
     }
 }
+
