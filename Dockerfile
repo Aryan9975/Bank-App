@@ -1,13 +1,14 @@
-# Use official Tomcat base image with JDK 17
-FROM tomcat:10.1-jdk17
+# Use a minimal base image with JDK 17
+FROM eclipse-temurin:17-jdk-alpine
 
-# Clean default apps (optional but cleaner)
-RUN rm -rf /usr/local/tomcat/webapps/*
+# Set working directory
+WORKDIR /app
 
-# Copy your WAR file to the webapps folder
-COPY target/BANK-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
+# Copy the executable JAR file into the container
+COPY target/BANK-1.0-SNAPSHOT.jar app.jar
 
-# Expose the default Tomcat port
+# Expose the application's port
 EXPOSE 8080
 
-# Tomcat will auto-deploy ROOT.war
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
